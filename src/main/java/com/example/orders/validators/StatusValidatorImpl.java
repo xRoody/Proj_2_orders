@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class StatusValidatorImpl implements StatusValidator{
     private final StatusService statusService;
-    private static final Pattern VALUE_PATTERN=Pattern.compile("[A-Z][a-z\\d]*");
+    private static final Pattern VALUE_PATTERN=Pattern.compile("[A-Z][a-z\\d\\s]*");
 
     @Override
     public List<BodyExceptionWrapper> validateNewStatus(StatusDTO statusDTO) {

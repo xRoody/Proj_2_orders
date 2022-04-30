@@ -1,9 +1,16 @@
 package com.example.orders.entityes;
 
+import lombok.*;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "offer_order_card")
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
 public class OfferOrderCard {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,9 +20,7 @@ public class OfferOrderCard {
     private Long offerId;
     @Column(name = "quantity")
     private int quantity;
-    @Column(name = "price")
-    private double price;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "order_id")
-    private Order order;
+    private Order thisOrder;
 }

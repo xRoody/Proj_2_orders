@@ -4,11 +4,11 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "order")
+@Table(name = "my_order")
 @Setter
 @Getter
 @Builder
@@ -28,6 +28,6 @@ public class Order {
     private LocalDate dob;
     @Column(name = "address_id")
     private Long addressId;
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "order", cascade = {CascadeType.ALL})
-    private Collection<OfferOrderCard> offerOrderCards=new HashSet<>();
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "thisOrder", orphanRemoval = true)
+    private Set<OfferOrderCard> offerOrderCards=new HashSet<>();
 }

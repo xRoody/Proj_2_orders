@@ -14,4 +14,5 @@ public interface StatusService {
     boolean isExists(String value);
     StatusDTO getStatusValue(Long id);
     boolean delete(Long id);
+    Status get(String value);
 }

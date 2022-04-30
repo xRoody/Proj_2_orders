@@ -1,17 +1,13 @@
 package com.example.orders.DTOs;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OfferOrderCardDTO {
+public class AddressDTO {
     private Long id;
-    private Long offerId;
-    private int quantity;
-    private Long orderId;
+    private Long customerId;
 }

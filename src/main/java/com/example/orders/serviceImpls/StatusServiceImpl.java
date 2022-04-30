@@ -19,13 +19,13 @@ public class StatusServiceImpl implements StatusService {
     private final StatusRepo statusRepo;
 
     public void addNewStatus(String value){
-        if (statusRepo.existsByValue(value)){
+        if (!statusRepo.existsByValue(value)){
             statusRepo.save(Status.builder().value(value).build());
         }
     }
 
     public boolean delete(String value){
-        if (statusRepo.existsByValue(value)){ //&& orderRepo.countByStatus(status)==0
+        if (statusRepo.existsByValue(value)){
             statusRepo.deleteByValue(value);
             return true;
         }
@@ -56,10 +56,14 @@ public class StatusServiceImpl implements StatusService {
     }
 
     public boolean delete(Long id){
-        if (statusRepo.existsById(id)){ //&& orderRepo.countByStatus(status)==0
+        if (statusRepo.existsById(id)){
             statusRepo.deleteById(id);
             return true;
         }
         return false;
+    }
+
+    public Status get(String value){
+        return statusRepo.getStatusByValue(value);
     }
 }
