@@ -56,9 +56,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDTO getDTOByObj(Order order){
         if (order==null) return null;
         return OrderDTO.builder().id(order.getId())
-                .customerId(order.getCustomerId())
                 .status(order.getStatus().getValue())
-                .addressId(order.getAddressId())
                 .dob(order.getDob())
                 .offerOrderCards(order.getOfferOrderCards().stream().map(offerOrderCardService::getDTOByObj).collect(Collectors.toList()))
                 .build();
@@ -70,9 +68,7 @@ public class OrderServiceImpl implements OrderService {
 
     public void add(OrderDTO orderDTO){
         Order order=Order.builder()
-                .customerId(orderDTO.getCustomerId())
                 .status(statusService.get(orderDTO.getStatus()))
-                .addressId(orderDTO.getAddressId())
                 .dob(orderDTO.getDob())
                 .offerOrderCards(new HashSet<>())
                 .build();
@@ -95,9 +91,7 @@ public class OrderServiceImpl implements OrderService {
 
     public void update(OrderDTO orderDTO){
         Order order=orderRepo.getById(orderDTO.getId());
-        order.setCustomerId(orderDTO.getCustomerId());
         order.setStatus(statusService.get(orderDTO.getStatus()));
-        order.setAddressId(orderDTO.getAddressId());
         order.setDob(orderDTO.getDob());
         for(OfferOrderCardDTO dto:orderDTO.getOfferOrderCards()){
             dto.setOrderId(order.getId());

@@ -20,15 +20,11 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
     private Long id;
-    @Column(name = "customer_id")
-    private Long customerId;
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "status_id")
     private Status status;
     @Column(name = "dob", columnDefinition = "TIMESTAMP")
     private LocalDateTime dob;
-    @Column(name = "address_id")
-    private Long addressId;
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "thisOrder", orphanRemoval = true)
     private Set<OfferOrderCard> offerOrderCards=new HashSet<>();
 }

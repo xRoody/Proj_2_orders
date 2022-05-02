@@ -16,9 +16,7 @@ import java.util.HashSet;
 @Data
 public class OrderDTO {
     private Long id;
-    private Long customerId;
     private String status;
     private LocalDateTime dob;
-    private Long addressId;
     private Collection<OfferOrderCardDTO> offerOrderCards=new HashSet<>();
 }
