@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -24,8 +25,8 @@ public class Order {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "status_id")
     private Status status;
-    @Column(name = "dob")
-    private LocalDate dob;
+    @Column(name = "dob", columnDefinition = "TIMESTAMP")
+    private LocalDateTime dob;
     @Column(name = "address_id")
     private Long addressId;
     @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.ALL}, mappedBy = "thisOrder", orphanRemoval = true)

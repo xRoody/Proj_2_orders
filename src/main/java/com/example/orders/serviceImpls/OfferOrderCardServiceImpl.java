@@ -6,6 +6,7 @@ import com.example.orders.repositories.OfferOrderCardRepo;
 import com.example.orders.repositories.OrderRepo;
 import com.example.orders.services.OfferOrderCardService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class OfferOrderCardServiceImpl implements OfferOrderCardService {
     private final OfferOrderCardRepo offerOrderCardRepo;
     private final OrderRepo orderRepo;
@@ -28,11 +30,13 @@ public class OfferOrderCardServiceImpl implements OfferOrderCardService {
                 .thisOrder(orderRepo.getById(offerOrderCardDTO.getOrderId()))
                 .build();
         offerOrderCardRepo.save(offerOrderCard);
+        log.info("Add new card {}", offerOrderCardDTO);
     }
 
     public boolean delete(Long id){
         if (offerOrderCardRepo.existsById(id)){
             offerOrderCardRepo.deleteById(id);
+            log.info("delete card id={}", id);
             return true;
         }
         return false;
@@ -75,6 +79,7 @@ public class OfferOrderCardServiceImpl implements OfferOrderCardService {
         offerOrderCard.setQuantity(offerOrderCardDTO.getQuantity());
         offerOrderCard.setOfferId(offerOrderCardDTO.getOfferId());
         offerOrderCard.setThisOrder(orderRepo.getById(offerOrderCardDTO.getOrderId()));
+        log.info("update card {}", getDTOByObj(offerOrderCard));
     }
 
     public long countWithOfferId(Long id){

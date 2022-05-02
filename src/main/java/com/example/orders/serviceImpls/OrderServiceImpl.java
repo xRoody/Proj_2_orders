@@ -5,12 +5,14 @@ import com.example.orders.DTOs.OfferOrderCardDTO;
 import com.example.orders.DTOs.OrderDTO;
 import com.example.orders.entityes.OfferOrderCard;
 import com.example.orders.entityes.Order;
+import com.example.orders.exceptions.OfferNotFound;
 import com.example.orders.repositories.OrderRepo;
 import com.example.orders.services.OfferOrderCardService;
 import com.example.orders.services.OrderService;
 import com.example.orders.services.StatusService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class OrderServiceImpl implements OrderService {
     private final StatusService statusService;
     private final OrderRepo orderRepo;
@@ -78,11 +81,13 @@ public class OrderServiceImpl implements OrderService {
             dto.setOrderId(order.getId());
             order.getOfferOrderCards().add(offerOrderCardService.getObjByDTO(dto));
         }
+        log.info("add order {}", orderDTO);
     }
 
     public boolean delete(Long id){
         if (orderRepo.existsById(id)){
             orderRepo.deleteById(id);
+            log.info("delete order id={}", id);
             return true;
         }
         return false;
@@ -103,12 +108,14 @@ public class OrderServiceImpl implements OrderService {
             }
         }
         orderRepo.save(order);
+        log.info("update order {}", orderDTO);
     }
 
     public void changeStatus(Long orderId, Long statusId){
         Order order=orderRepo.getById(orderId);
         order.setStatus(statusService.getStatus(statusId));
         orderRepo.save(order);
+        log.info("change order {} status from {} to {}", orderId, order.getStatus().getId(), statusId);
     }
 
     @Override
@@ -124,9 +131,10 @@ public class OrderServiceImpl implements OrderService {
                     list.add(catAndPriceDTO);
                 }
             }catch (WebClientException e){
-                throw new RuntimeException(e);
+                throw new OfferNotFound(dto.getOfferId());
             }
         }
+        log.info("get all info for order id={}", id);
         return list;
     }
 

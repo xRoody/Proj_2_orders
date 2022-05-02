@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -17,7 +18,7 @@ public class OrderDTO {
     private Long id;
     private Long customerId;
     private String status;
-    private LocalDate dob;
+    private LocalDateTime dob;
     private Long addressId;
     private Collection<OfferOrderCardDTO> offerOrderCards=new HashSet<>();
 }

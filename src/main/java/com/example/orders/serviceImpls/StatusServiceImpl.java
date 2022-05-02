@@ -5,6 +5,7 @@ import com.example.orders.entityes.Status;
 import com.example.orders.repositories.StatusRepo;
 import com.example.orders.services.StatusService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,18 +16,21 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class StatusServiceImpl implements StatusService {
     private final StatusRepo statusRepo;
 
     public void addNewStatus(String value){
         if (!statusRepo.existsByValue(value)){
             statusRepo.save(Status.builder().value(value).build());
+            log.info("add new status value={}", value);
         }
     }
 
     public boolean delete(String value){
         if (statusRepo.existsByValue(value)){
             statusRepo.deleteByValue(value);
+            log.info("delete status value={}", value);
             return true;
         }
         return false;
@@ -36,6 +40,7 @@ public class StatusServiceImpl implements StatusService {
         Status status=statusRepo.getById(statusDTO.getId());
         status.setValue(statusDTO.getValue());
         statusRepo.save(status);
+        log.info("update status {}", statusDTO);
     }
 
     public Status getStatus(Long id){
@@ -58,6 +63,7 @@ public class StatusServiceImpl implements StatusService {
     public boolean delete(Long id){
         if (statusRepo.existsById(id)){
             statusRepo.deleteById(id);
+            log.info("delete status id={}", id);
             return true;
         }
         return false;

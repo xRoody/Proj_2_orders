@@ -16,7 +16,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public class OrderValidatorImpl implements OrderValidator{
 
     public List<BodyExceptionWrapper> validateOrder(OrderDTO orderDTO){
         List<BodyExceptionWrapper> reports=new ArrayList<>();
-        if(orderDTO.getDob().isAfter(LocalDate.now())) reports.add(new BodyExceptionWrapper("t-003", "Incorrect date"));
+        if(orderDTO.getDob().isAfter(LocalDateTime.now())) reports.add(new BodyExceptionWrapper("t-003", "Incorrect date"));
         if (!statusService.isExists(orderDTO.getStatus())) reports.add(new BodyExceptionWrapper("e-003", "This status is not exists"));
         validateCustomerAndAddress(orderDTO.getCustomerId(), orderDTO.getAddressId(), reports);
         validateCards(new ArrayList<>(orderDTO.getOfferOrderCards()), reports);
