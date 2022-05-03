@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.net.URI;
 import java.util.List;
 
@@ -47,10 +48,11 @@ public class StatusController {
         return ResponseEntity.created(URI.create("/statuses")).build();
     }
 
-    @PutMapping
-    public ResponseEntity<Object> update(@RequestBody StatusDTO statusDTO){
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable("id") Long id,@RequestBody StatusDTO statusDTO){
         if (!statusService.isExists(statusDTO.getValue())) return ResponseEntity.notFound().build();
         List<BodyExceptionWrapper> reports=statusValidator.validateUpdatedStatus(statusDTO);
+        statusDTO.setId(id);
         if (reports.size()!=0) {
             log.info("bad request {}", reports);
             return new ResponseEntity<>(reports,HttpStatus.CONFLICT);

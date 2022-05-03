@@ -1,29 +1,21 @@
 package com.example.orders.serviceImpls;
 
-import com.example.orders.DTOs.CatAndPriceDTO;
+import com.example.orders.DTOs.CharacteristicDTO;
 import com.example.orders.DTOs.OfferOrderCardDTO;
 import com.example.orders.DTOs.OrderDTO;
-import com.example.orders.entityes.OfferOrderCard;
 import com.example.orders.entityes.Order;
-import com.example.orders.exceptions.OfferNotFound;
 import com.example.orders.repositories.OrderRepo;
 import com.example.orders.services.OfferOrderCardService;
 import com.example.orders.services.OrderService;
 import com.example.orders.services.StatusService;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,13 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final StatusService statusService;
     private final OrderRepo orderRepo;
     private final OfferOrderCardService offerOrderCardService;
-    private  WebClient client;
 
-    @Autowired
-    @Qualifier("8080")
-    public void setClient(WebClient client) {
-        this.client = client;
-    }
 
     public Order get(Long id){
         return orderRepo.findById(id).orElse(null);
@@ -112,25 +98,7 @@ public class OrderServiceImpl implements OrderService {
         log.info("change order {} status from {} to {}", orderId, order.getStatus().getId(), statusId);
     }
 
-    @Override
-    public List<CatAndPriceDTO> getInfo(Long id) {
-        OrderDTO orderDTO=getDTO(id);
-        List<CatAndPriceDTO> list=new ArrayList<>();
-        for (OfferOrderCardDTO dto:orderDTO.getOfferOrderCards()){
-            try {
-                WebClient.ResponseSpec response = client.get().uri("/offers/{id}/categoryAndPrice", dto.getOfferId()).retrieve();
-                if (response.toBodilessEntity().block().getStatusCode().equals(HttpStatus.OK)) {
-                    CatAndPriceDTO catAndPriceDTO = response.toEntity(CatAndPriceDTO.class).block().getBody();
-                    catAndPriceDTO.setPrice(catAndPriceDTO.getPrice() * dto.getQuantity());
-                    list.add(catAndPriceDTO);
-                }
-            }catch (WebClientException e){
-                throw new OfferNotFound(dto.getOfferId());
-            }
-        }
-        log.info("get all info for order id={}", id);
-        return list;
-    }
+
 
     @Override
     public long countByStatus(Long id){
@@ -140,5 +108,15 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public boolean isExists(Long id) {
         return id!=null && orderRepo.findById(id).isPresent();
+    }
+
+    public Double getPrice(Long id){
+        OrderDTO orderDTO=getDTO(id);
+        if (orderDTO==null) return null;
+        Double res=0.0;
+        for(OfferOrderCardDTO dto:orderDTO.getOfferOrderCards()) {
+            res += offerOrderCardService.getPrice(dto);
+        }
+        return res;
     }
 }

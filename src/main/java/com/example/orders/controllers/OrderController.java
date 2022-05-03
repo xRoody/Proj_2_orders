@@ -1,6 +1,5 @@
 package com.example.orders.controllers;
 
-import com.example.orders.DTOs.CatAndPriceDTO;
 import com.example.orders.DTOs.OrderDTO;
 import com.example.orders.exceptions.BodyExceptionWrapper;
 import com.example.orders.services.OrderService;
@@ -65,25 +64,23 @@ public class OrderController {
         return ResponseEntity.created(URI.create("/offers")).build();
     }
 
-    @PutMapping
-    public ResponseEntity<Object> update(@RequestBody OrderDTO orderDTO){
+    @PutMapping("/{id}")
+    public ResponseEntity<Object> update(@PathVariable("id") Long id,@RequestBody OrderDTO orderDTO){
         if (!orderService.isExists(orderDTO.getId())) return ResponseEntity.notFound().build();
         List<BodyExceptionWrapper> reports=orderValidator.validateOrder(orderDTO);
         if (reports.size()!=0) {
             log.info("bad request {}", reports);
             return new ResponseEntity<>(reports, HttpStatus.CONFLICT);
         }
+        orderDTO.setId(id);
         orderService.update(orderDTO);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{id}/getInfo")
-    public ResponseEntity<Object> getInfo(@PathVariable("id") Long id) {
-        List<CatAndPriceDTO> dto=orderService.getInfo(id);
-        if (dto==null) {
-            log.info("order not found");
-            return ResponseEntity.notFound().build();
-        }
-        return new ResponseEntity<>(dto,HttpStatus.OK);
+    @GetMapping("/{id}/getPrice")
+    public ResponseEntity<Object> getPrice(@PathVariable("id") Long id){
+        Double d=orderService.getPrice(id);
+        if (d==null) return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(d);
     }
 }

@@ -1,5 +1,6 @@
 package com.example.orders.services;
 
+import com.example.orders.DTOs.CharacteristicDTO;
 import com.example.orders.DTOs.OfferOrderCardDTO;
 import com.example.orders.entityes.OfferOrderCard;
 
@@ -16,4 +17,7 @@ public interface OfferOrderCardService {
     long countWithOfferId(Long id);
     boolean isExists(Long id);
     OfferOrderCard getObjByDTO(OfferOrderCardDTO offerOrderCardDTO);
+    List<CharacteristicDTO> getInfo(Long id);
+
+    Double getPrice(OfferOrderCardDTO dto);
 }

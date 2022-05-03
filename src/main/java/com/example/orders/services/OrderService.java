@@ -1,6 +1,5 @@
 package com.example.orders.services;
 
-import com.example.orders.DTOs.CatAndPriceDTO;
 import com.example.orders.DTOs.OrderDTO;
 import com.example.orders.entityes.Order;
 
@@ -17,5 +16,6 @@ public interface OrderService {
     boolean delete(Long id);
     void update(OrderDTO orderDTO);
     void changeStatus(Long orderId, Long statusId);
-    List<CatAndPriceDTO> getInfo(Long id);
+
+    Double getPrice(Long id);
 }
