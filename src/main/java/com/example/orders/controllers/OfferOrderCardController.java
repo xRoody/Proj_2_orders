@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,11 +26,13 @@ public class OfferOrderCardController {
     private final OfferOrderCardService offerOrderCardService;
     private final OfferOrderCardValidator offerOrderCardValidator;
     private final ChangedCharacteristicService changedService;
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping
     public ResponseEntity<Object> getAll(){
         return ResponseEntity.ok(offerOrderCardService.getAll());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") Long id){
         OfferOrderCardDTO dto=offerOrderCardService.getDTO(id);
@@ -40,6 +43,7 @@ public class OfferOrderCardController {
         return ResponseEntity.ok(dto);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id){
         if (offerOrderCardService.delete(id)) return ResponseEntity.ok().build();
@@ -47,11 +51,13 @@ public class OfferOrderCardController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/countByOfferId/{id}")
     public ResponseEntity<Object> count(@PathVariable("id") Long offerId){
         return ResponseEntity.ok(offerOrderCardService.countWithOfferId(offerId));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @PostMapping
     public ResponseEntity<Object> add(@RequestBody OfferOrderCardDTO offerOrderCardDTO){
         List<BodyExceptionWrapper> reports=offerOrderCardValidator.validateNewOfferOrderCard(offerOrderCardDTO);
@@ -63,6 +69,7 @@ public class OfferOrderCardController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable("id") Long id,@RequestBody OfferOrderCardDTO offerOrderCardDTO){
         List<BodyExceptionWrapper> reports=offerOrderCardValidator.validateExistsOfferOrderCard(offerOrderCardDTO);
@@ -75,6 +82,7 @@ public class OfferOrderCardController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @GetMapping("/{id}/getInfo")
     public ResponseEntity<Object> getInfo(@PathVariable("id") Long id){
         List<CharacteristicDTO> characteristicDTOS=offerOrderCardService.getInfo(id);
@@ -84,7 +92,7 @@ public class OfferOrderCardController {
         }
         return ResponseEntity.ok(characteristicDTOS);
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','USER', 'KITCHEN')")
     @PostMapping("/addChange")
     public ResponseEntity<Object> saveChangedCharacteristic(@RequestBody ChangedCharacteristicDTO characteristicDTO){
         /*add card price recalculating*/

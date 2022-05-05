@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,11 +23,13 @@ public class OrderController {
     private final OrderService orderService;
     private final OrderValidator orderValidator;
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @GetMapping
     public ResponseEntity<Object> getAll(){
         return ResponseEntity.ok(orderService.getAll());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") Long id){
         OrderDTO orderDTO=orderService.getDTO(id);
@@ -37,12 +40,14 @@ public class OrderController {
         return ResponseEntity.ok(orderDTO);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id){
         if(orderService.delete(id)) return ResponseEntity.ok().build();
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @PatchMapping("/{id}")
     public ResponseEntity<Void> changeStatus(@PathVariable("id") Long id, @RequestBody Long statusId){
         if (!orderService.isExists(id)){
@@ -52,7 +57,7 @@ public class OrderController {
         orderService.changeStatus(id, statusId);
         return ResponseEntity.ok().build();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','USER', 'KITCHEN')")
     @PostMapping
     public ResponseEntity<Object> save(@RequestBody OrderDTO orderDTO){
         List<BodyExceptionWrapper> reports=orderValidator.validateOrder(orderDTO);
@@ -64,6 +69,7 @@ public class OrderController {
         return ResponseEntity.created(URI.create("/offers")).build();
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'KITCHEN')")
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable("id") Long id,@RequestBody OrderDTO orderDTO){
         if (!orderService.isExists(orderDTO.getId())) return ResponseEntity.notFound().build();
@@ -76,7 +82,7 @@ public class OrderController {
         orderService.update(orderDTO);
         return ResponseEntity.ok().build();
     }
-
+    @PreAuthorize("hasAnyRole('ADMIN','USER', 'KITCHEN')")
     @GetMapping("/{id}/getPrice")
     public ResponseEntity<Object> getPrice(@PathVariable("id") Long id){
         Double d=orderService.getPrice(id);
