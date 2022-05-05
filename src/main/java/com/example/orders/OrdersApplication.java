@@ -12,6 +12,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +23,6 @@ public class OrdersApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(OrdersApplication.class, args);
-
         /*otherRepo.save(new Other("AdminService",encoder.encode("Sup3r+S3cret-p4ssw0rd"),"ADMIN"));
         otherRepo.save(new Other("KitchenService",encoder.encode("Sup3r+S3cret-p4ssw0rd"),"KITCHEN"));
         otherRepo.save(new Other("UserService",encoder.encode("Sup3r+S3cret-p4ssw0rd"),"USER"));*/
