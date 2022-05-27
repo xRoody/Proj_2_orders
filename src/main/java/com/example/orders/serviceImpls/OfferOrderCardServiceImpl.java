@@ -5,6 +5,7 @@ import com.example.orders.DTOs.CharacteristicDTO;
 import com.example.orders.DTOs.OfferOrderCardDTO;
 import com.example.orders.DTOs.OrderDTO;
 import com.example.orders.entityes.OfferOrderCard;
+import com.example.orders.entityes.Order;
 import com.example.orders.exceptions.OfferNotFound;
 import com.example.orders.repositories.OfferOrderCardRepo;
 import com.example.orders.repositories.OrderRepo;
@@ -21,6 +22,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,14 +44,15 @@ public class OfferOrderCardServiceImpl implements OfferOrderCardService {
         this.client = client;
     }
 
-    public void add(OfferOrderCardDTO offerOrderCardDTO) {
+    public Long add(OfferOrderCardDTO offerOrderCardDTO) {
         OfferOrderCard offerOrderCard = OfferOrderCard.builder()
                 .offerId(offerOrderCardDTO.getOfferId())
                 .quantity(offerOrderCardDTO.getQuantity())
                 .thisOrder(orderRepo.getById(offerOrderCardDTO.getOrderId()))
                 .build();
-        offerOrderCardRepo.save(offerOrderCard);
+        OfferOrderCard o=offerOrderCardRepo.save(offerOrderCard);
         log.info("Add new card {}", offerOrderCardDTO);
+        return o.getId();
     }
 
     public boolean delete(Long id) {
@@ -77,6 +80,7 @@ public class OfferOrderCardServiceImpl implements OfferOrderCardService {
                 .quantity(offerOrderCard.getQuantity())
                 .offerId(offerOrderCard.getOfferId())
                 .orderId(offerOrderCard.getThisOrder().getId())
+                .isChanged(changedCharacteristicService.isExistsByCardId(offerOrderCard.getId()))
                 .build();
     }
 
@@ -119,6 +123,7 @@ public class OfferOrderCardServiceImpl implements OfferOrderCardService {
             WebClient.ResponseSpec response = client.get().uri("/offers/{id}/characteristics", cardDTO.getOfferId()).retrieve();
             if (response.toBodilessEntity().block().getStatusCode().equals(HttpStatus.OK)) {
                 list=response.toEntityList(CharacteristicDTO.class).block().getBody();
+                System.out.println(list);
                 for (CharacteristicDTO dto:list){
                     dto.setCardId(id);
                     changedCharacteristicService.computeIfChanged(dto);
@@ -150,5 +155,10 @@ public class OfferOrderCardServiceImpl implements OfferOrderCardService {
             throw new OfferNotFound(cardDTO.getOfferId());
         }
         return res*cardDTO.getQuantity();
+    }
+
+    @Override
+    public Collection<OfferOrderCard> findAllByOrder(Order order) {
+        return offerOrderCardRepo.findAllByThisOrder(order);
     }
 }

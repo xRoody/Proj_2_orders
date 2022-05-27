@@ -24,13 +24,6 @@ public class OrderValidatorImpl implements OrderValidator{
     private final OfferOrderCardService offerOrderCardService;
     private final OfferOrderCardValidator offerOrderCardValidator;
     private final StatusService statusService;
-    private WebClient client8081;
-
-    @Autowired
-    @Qualifier(value = "8081")
-    public void setClient8081(WebClient client) {
-        this.client8081 = client;
-    }
 
     public List<BodyExceptionWrapper> validateOrder(OrderDTO orderDTO){
         List<BodyExceptionWrapper> reports=new ArrayList<>();
@@ -41,11 +34,11 @@ public class OrderValidatorImpl implements OrderValidator{
     }
 
     private void validateCards(List<OfferOrderCardDTO> offerOrderCards, List<BodyExceptionWrapper> reports) {
-        for (OfferOrderCardDTO dto:offerOrderCards){
+        /*for (OfferOrderCardDTO dto:offerOrderCards){
             if (offerOrderCardService.isExists(dto.getId())){
                 reports.addAll(offerOrderCardValidator.validateExistsOfferOrderCard(dto));
             }
             else reports.addAll(offerOrderCardValidator.validateOfferOrderCardFromOrderValidator(dto));
-        }
+        }*/
     }
 }

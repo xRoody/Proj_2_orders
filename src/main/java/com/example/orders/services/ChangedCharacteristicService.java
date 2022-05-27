@@ -7,4 +7,6 @@ public interface ChangedCharacteristicService {
     double computeIfChanged(CharacteristicDTO characteristicDTO);
 
     void save(ChangedCharacteristicDTO characteristicDTO);
+
+    boolean isExistsByCardId(Long id);
 }

@@ -3,8 +3,10 @@ package com.example.orders.serviceImpls;
 import com.example.orders.DTOs.CharacteristicDTO;
 import com.example.orders.DTOs.OfferOrderCardDTO;
 import com.example.orders.DTOs.OrderDTO;
+import com.example.orders.DTOs.OrderWrapper;
 import com.example.orders.entityes.Order;
 import com.example.orders.repositories.OrderRepo;
+import com.example.orders.services.ChangedCharacteristicService;
 import com.example.orders.services.OfferOrderCardService;
 import com.example.orders.services.OrderService;
 import com.example.orders.services.StatusService;
@@ -16,8 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -29,6 +33,8 @@ public class OrderServiceImpl implements OrderService {
     private final StatusService statusService;
     private final OrderRepo orderRepo;
     private final OfferOrderCardService offerOrderCardService;
+    private final ChangedCharacteristicService changedCharacteristicService;
+    private final WebClient client;
 
 
     public Order get(Long id){
@@ -44,15 +50,21 @@ public class OrderServiceImpl implements OrderService {
         return OrderDTO.builder().id(order.getId())
                 .status(order.getStatus().getValue())
                 .dob(order.getDob())
-                .offerOrderCards(order.getOfferOrderCards().stream().map(offerOrderCardService::getDTOByObj).collect(Collectors.toList()))
+                .offerOrderCards(offerOrderCardService.findAllByOrder(order).stream().map(offerOrderCardService::getDTOByObj).collect(Collectors.toList()))
                 .build();
     }
 
-    public List<OrderDTO> getAll(){
+    public List<OrderDTO> trueGetAll(){
         return orderRepo.findAll().stream().map(this::getDTOByObj).collect(Collectors.toList());
+
     }
 
-    public void add(OrderDTO orderDTO){
+    public List<OrderDTO> getAll(){
+        return orderRepo.findAllByStatusNotOrderByDob(statusService.getStatus(1l)).stream().map(this::getDTOByObj).collect(Collectors.toList());
+    }
+
+    public Long add(OrderWrapper wrapper){
+        OrderDTO orderDTO=wrapper.getOrder();
         Order order=Order.builder()
                 .status(statusService.get(orderDTO.getStatus()))
                 .dob(orderDTO.getDob())
@@ -60,10 +72,14 @@ public class OrderServiceImpl implements OrderService {
                 .build();
         order=orderRepo.save(order);
         for (OfferOrderCardDTO dto:orderDTO.getOfferOrderCards()){
+            Long idBuf=dto.getId();
+            dto.setId(null);
             dto.setOrderId(order.getId());
-            order.getOfferOrderCards().add(offerOrderCardService.getObjByDTO(dto));
+            Long realId=offerOrderCardService.add(dto);
+            wrapper.getChanges().stream().filter(x->x.getCardId().equals(idBuf)).peek(x-> x.setCardId(realId)).forEach(changedCharacteristicService::save);
         }
         log.info("add order {}", orderDTO);
+        return order.getId();
     }
 
     public boolean delete(Long id){

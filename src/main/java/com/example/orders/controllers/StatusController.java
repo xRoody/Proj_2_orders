@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import javax.websocket.server.PathParam;
@@ -25,13 +25,13 @@ public class StatusController {
     private final StatusValidator statusValidator;
     private final OrderService orderService;
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping
     public ResponseEntity<Object> getAll(){
         return ResponseEntity.ok(statusService.getAllStatusesValues());
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/{id}")
     public ResponseEntity<Object> getById(@PathVariable("id") Long id){
         StatusDTO s=statusService.getStatusValue(id);
@@ -40,7 +40,7 @@ public class StatusController {
         return ResponseEntity.notFound().build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PostMapping
     public ResponseEntity<Object> addNewStatus(@RequestBody StatusDTO statusDTO){
         List<BodyExceptionWrapper> reports=statusValidator.validateNewStatus(statusDTO);
@@ -51,7 +51,7 @@ public class StatusController {
         statusService.addNewStatus(statusDTO.getValue());
         return ResponseEntity.created(URI.create("/statuses")).build();
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @PutMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable("id") Long id,@RequestBody StatusDTO statusDTO){
         if (!statusService.isExists(statusDTO.getValue())) return ResponseEntity.notFound().build();
@@ -64,7 +64,7 @@ public class StatusController {
         statusService.update(statusDTO);
         return ResponseEntity.ok().build();
     }
-    @PreAuthorize("hasRole('ADMIN')")
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Object> delete(@PathVariable("id") Long id){
         if (orderService.countByStatus(id)!=0){

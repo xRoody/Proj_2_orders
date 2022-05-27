@@ -4,7 +4,7 @@ import lombok.Data;
 
 @Data
 public class ChangedCharacteristicDTO {
-    private Long id;
+    private Long nodeId;//title
     private Long cardId;
     private Integer quantity;
     private Double price;

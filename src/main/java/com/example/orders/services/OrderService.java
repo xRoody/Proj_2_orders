@@ -1,6 +1,7 @@
 package com.example.orders.services;
 
 import com.example.orders.DTOs.OrderDTO;
+import com.example.orders.DTOs.OrderWrapper;
 import com.example.orders.entityes.Order;
 
 import java.util.List;
@@ -12,10 +13,12 @@ public interface OrderService {
     OrderDTO getDTO(Long id);
     OrderDTO getDTOByObj(Order order);
     List<OrderDTO> getAll();
-    void add(OrderDTO orderDTO);
+    Long add(OrderWrapper orderDTO);
     boolean delete(Long id);
     void update(OrderDTO orderDTO);
     void changeStatus(Long orderId, Long statusId);
 
     Double getPrice(Long id);
+
+    List<OrderDTO> trueGetAll();
 }

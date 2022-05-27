@@ -14,6 +14,6 @@ import java.io.Serializable;
 @Embeddable
 @Builder
 public class ChangedId implements  Serializable{
-    private Long id;
+    private Long nodeId;
     private Long cardId;
 }

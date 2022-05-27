@@ -14,4 +14,5 @@ public class OfferOrderCardDTO {
     private Long offerId;
     private int quantity;
     private Long orderId;
+    private boolean isChanged;
 }

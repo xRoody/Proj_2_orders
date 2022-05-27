@@ -38,8 +38,13 @@ public class ChangedCharacteristicServiceImpl implements ChangedCharacteristicSe
 
     private ChangedCharacteristic getObjByDTO(ChangedCharacteristicDTO characteristicDTO){
         return ChangedCharacteristic.builder()
-                .changedId(ChangedId.builder().cardId(characteristicDTO.getCardId()).id(characteristicDTO.getId()).build())
+                .changedId(ChangedId.builder().cardId(characteristicDTO.getCardId()).nodeId(characteristicDTO.getNodeId()).build())
                 .quantity(characteristicDTO.getQuantity())
                 .build();
+    }
+
+    @Override
+    public boolean isExistsByCardId(Long id) {
+        return changedRepo.countAllByChangedId_CardId(id)>0;
     }
 }

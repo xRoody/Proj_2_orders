@@ -3,11 +3,13 @@ package com.example.orders.services;
 import com.example.orders.DTOs.CharacteristicDTO;
 import com.example.orders.DTOs.OfferOrderCardDTO;
 import com.example.orders.entityes.OfferOrderCard;
+import com.example.orders.entityes.Order;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface OfferOrderCardService {
-    void add(OfferOrderCardDTO offerOrderCardDTO);
+    Long add(OfferOrderCardDTO offerOrderCardDTO);
     boolean delete(Long id);
     OfferOrderCard getObj(Long id);
     OfferOrderCardDTO getDTO(Long id);
@@ -20,4 +22,6 @@ public interface OfferOrderCardService {
     List<CharacteristicDTO> getInfo(Long id);
 
     Double getPrice(OfferOrderCardDTO dto);
+
+    Collection<OfferOrderCard> findAllByOrder(Order order);
 }
